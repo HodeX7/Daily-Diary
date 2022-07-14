@@ -1,5 +1,8 @@
 import React, { useState } from "react";
-import { MdMic } from "react-icons/md";
+import { MdMic, MdMicOff } from "react-icons/md";
+import SpeechRecognition, {
+  useSpeechRecognition,
+} from "react-speech-recognition";
 
 function AddNote({ handleAddNote }) {
   const [noteText, setNoteText] = useState("");
@@ -15,6 +18,21 @@ function AddNote({ handleAddNote }) {
     }
   };
 
+  //voice note
+
+  const handleVoice = () => {
+    SpeechRecognition.startListening();
+    setNoteText(transcript);
+    console.log(transcript);
+  };
+
+  const { transcript, browserSupportsSpeechRecognition } =
+    useSpeechRecognition();
+
+  if (!browserSupportsSpeechRecognition) {
+    return <span>Browser doesn't support speech recognition.</span>;
+  }
+
   return (
     <div className="note new">
       <textarea
@@ -26,6 +44,12 @@ function AddNote({ handleAddNote }) {
       ></textarea>
       <div className="note__footer">
         <small>{charLimit - noteText.length} Remaining</small>
+        <MdMic onClick={handleVoice} className="delete__icon" size="1.3em" />
+        <MdMicOff
+          onClick={SpeechRecognition.stopListening}
+          className="delete__icon"
+          size="1.3em"
+        />
         <button className="save" onClick={handleClick}>
           SAVE
         </button>
